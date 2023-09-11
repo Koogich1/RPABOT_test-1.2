@@ -1,25 +1,31 @@
-//токен "6333961639:AAGg7ClRB50AA7VQaO12Nd90je-KAS3xuTE"
+//токен 6333961639:AAGg7ClRB50AA7VQaO12Nd90je-KAS3xuTE
 const XLSX = require('xlsx');
+const moment = require('moment');
+
 
 const workbook = XLSX.readFile('./excelTAB/sptmb.xlsx');
 
-
-const currentDate = new Date();
+const currentDate = moment().toDate();
 
 const year = currentDate.getFullYear().toString().slice(2);
 const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
 const day = currentDate.getDate().toString().padStart(2, '0');
 
 
+
 const searchText = `${day}.${month}.${year}`;
+
+
 
 let cellFound = false;
 let foundCellAddress;
-let pairsArray = [];
+
 
 const pairValue = [];
 const pairValue2 = [];
+const pairValue2T = [];
 const pairValue3 = [];
+const pairValue3T = [];
 const pairValueT = [];
 
 
@@ -42,7 +48,7 @@ for (const sheetName of workbook.SheetNames) {
           
           const lastcol = rowIndex + 6;
 
-          for (let i = rowIndex; i < lastcol; i++) {
+          for (let i = rowIndex; i < lastcol; i++){
             //Лекция сегодня и время сегодня координаты по х
             const lectia = colIndex + 2;
             const timel = colIndex + 1;
@@ -66,19 +72,30 @@ for (const sheetName of workbook.SheetNames) {
             
             const timingT = worksheet[timelectiaT];
             const timeifT = timingT && timingT.v ? timingT.v : '1';    
+
             const group2 = lectia+1;
+
             //время тоже, что у сегодняшних т е timel
             const lessgroup2 = XLSX.utils.encode_cell({ r: i, c: group2 });
+            const lessgroup2T = XLSX.utils.encode_cell({ r: tomorow, c: group2 });
             //время тоже, что у сегодняшних timelectia
             const group2now = worksheet[lessgroup2];
             const goup2rule = group2now && group2now.v ? group2now.v : '1';
+            
+            const group2t = worksheet[lessgroup2T];
+            const goup2ruleT = group2t && group2t.v ? group2t.v : '1';
 
             const group3 = lectia+2;
             //время тоже, что у сегодняшних т е timel
             const lessgroup3 = XLSX.utils.encode_cell({ r: i, c: group3 });
+            const lessgroup3T = XLSX.utils.encode_cell({ r: tomorow, c: group3 });
             //время тоже, что у сегодняшних timelectia
             const group3now = worksheet[lessgroup3];
             const goup3rule = group3now && group3now.v ? group3now.v : '1'; 
+
+            const group3T = worksheet[lessgroup3T];
+            const goup3ruleT = group3T && group3T.v ? group3T.v : '1'; 
+
             
             if (goup3rule == 1) {
               
@@ -86,21 +103,40 @@ for (const sheetName of workbook.SheetNames) {
               const pairValueString = `${timeif}:  ${goup3rule}`;
               const cleanedPairValue = pairValueString.replace(/[\r\n]+/g, '');
               pairValue3.push(cleanedPairValue);
-            }
+            };
 
+            if (goup3ruleT == 1){
+      
+            }else{
+              const pairValueString = `${timeifT}:  ${goup3ruleT}`;
+              const cleanedPairValue = pairValueString.replace(/[\r\n]+/g, '');
+              pairValue3T.push(cleanedPairValue);
+            };
+            
             if (goup2rule == 1) {
               
-            } else {
+            }else{
               const pairValueString = `${timeif}: ${goup2rule}`;
               const cleanedPairValue = pairValueString.replace(/[\r\n]+/g, '');
               pairValue2.push(cleanedPairValue);
+            };
+
+            if(goup2ruleT == 1){
+
+            }else{
+              const pairValueString = `${timeifT}:  ${goup2ruleT}`;
+              const cleanedPairValue = pairValueString.replace(/[\r\n]+/g, '');
+              pairValue2T.push(cleanedPairValue);
             }
+
             if(cellValueT == 1){
+
             }else{
               const pairValueTString = `${timeifT}: ${cellValueT}`;
               const cleanedPairValueT = pairValueTString.replace(/[\r\n]+/g, ''); // Очистка от \r\n
               pairValueT.push(cleanedPairValueT);
             };
+
             if(cellValue == 1){
                 
             }else{
@@ -126,6 +162,7 @@ for (const sheetName of workbook.SheetNames) {
 if (pairValue3.length === 0) {
   pairValue3.push(...pairValue)
 }
+
 let test = pairValue2;
 let test2 = pairValue;
 
@@ -137,8 +174,14 @@ if(pairValue2==pairValue){
   };
 };
 
+if (pairValue2T.length === 0){
+  pairValue2T.push(...pairValueT);
+}
 if (pairValue2.length === 0) {
   pairValue2.push(...pairValue);
 }
+if (pairValue3T.length === 0) {
+  pairValue3T.push(...pairValueT);
+}
 
-module.exports = { pairValue, pairValueT, pairValue2, pairValue3, searchText};
+module.exports = { pairValue, pairValueT, pairValue2, pairValue2T, pairValue3, pairValue3T, searchText};

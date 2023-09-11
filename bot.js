@@ -1,13 +1,15 @@
 const TelegramApi = require("node-telegram-bot-api")
 
-const token = "6333961639:AAGg7ClRB50AA7VQaO12Nd90je-KAS3xuTE";
+const token = "6552983930:AAFG1lpkmB3iNn9_77BqKr9-FFOKubF6Nr8";
 
 const bot = new TelegramApi(token, { polling: true });
 
-const { pairValue, pairValueT, pairValue3, pairValue2, searchText} = require('./test.js');
+const { pairValue, pairValueT, pairValue2, pairValue2T, pairValue3, pairValue3T, searchText } = require('./test.js');
 const { pairValueK, pairValueTK} = require('./reader.js');
+const { url } = require("inspector");
 
-const excelTAB = './excelTAB/sptmb.xlsx';
+const excelTAB = './excelTAB/fail1.3.pdf';
+const excelTABK = './excelTAB/failk.pdf';
 
 var notes = [];
 let startCommandHandled = false;
@@ -20,6 +22,7 @@ bot.onText(/Отправь в (.+)/, function (msg, match) {
 
 	bot.sendMessage(userId, `Сегодня такие:\n\n${formattedPairs}`);
 });
+
 
 setInterval(function(){
 	for (var i = 0; i < notes.length; i++) {
@@ -39,7 +42,7 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
 
   bot.setMyCommands([
-    { command: 'Настройки', description: 'Старт меню' },
+    { command: 'Меню', description: 'Старт меню' }
   ]);
 
   bot.onText(/сНБо22-1/,(msg) => {
@@ -47,91 +50,117 @@ bot.on('message', async (msg) => {
     if (!startCommandHandled) {
       bot.sendMessage(chatId, "Привет, начинай пользоваться :3", {
         "reply_markup": {
-          "keyboard": [["Пары сегодня gr-1", "Пары завтра gr-1"], ["Расписание (файл.excel)"], ["Настройки"]],
+          "keyboard": [["Пары сегодня gr-1", "В след день gr-1"], ["Расписание"], ["Меню"]],
+          resize_keyboard: true
         }
       });
       startCommandHandled = true;
     }
-  
   });
+
   bot.onText(/сНБо22-2/,(msg) => {
     const chatId = msg.chat.id;
     if (!startCommandHandled) {
       bot.sendMessage(chatId, "Привет, начинай пользоваться :3", {
         "reply_markup": {
-          "keyboard": [["Пары сегодня gr-2", "Пары завтра gr-1"], ["Расписание (файл.excel)"], ["Настройки"]],
+          "keyboard": [["Пары сегодня gr-2", "В след день gr-2"], ["Расписание"], ["Меню"]],
+          resize_keyboard: true
         }
       });
       startCommandHandled = true;
     }
-  
   });
+
   bot.onText(/сНБо22-3/,(msg) => {
     const chatId = msg.chat.id;
     if (!startCommandHandled) {
       bot.sendMessage(chatId, "Привет, начинай пользоваться :3", {
         "reply_markup": {
-          "keyboard": [["Пары сегодня gr-3", "Пары завтра gr-1"], ["Расписание (файл.excel)"], ["Настройки"]],
+          "keyboard": [["Пары сегодня gr-3", "В след день gr-3"], ["Расписание"], ["Меню"]],
+          resize_keyboard: true
         }
       });
       startCommandHandled = true;
     }
-  
   });
+
   bot.onText(/сНБо22-К/,(msg) => {
     const chatId = msg.chat.id;
     if (!startCommandHandled) {
       bot.sendMessage(chatId, "Привет, начинай пользоваться :3", {
         "reply_markup": {
-          "keyboard": [["Пары сегодня k", "Пары завтра k"], ["Расписание (файл.excel)"], ["Настройки"]],
+          "keyboard": [["Пары сегодня k", "В след день k"], ["Расписание K"], ["Меню"]],
+          resize_keyboard: true
         }
       });
       startCommandHandled = true;
     }
-  
   });
-  bot.onText(/Настройки/, (msg) => {
+
+  bot.onText(/Меню/, (msg) => {
     const chatId = msg.chat.id;
     if (startCommandHandled) {
       bot.sendMessage(chatId, "Привет, выбери группу", {
         "reply_markup": {
-          "keyboard": [["сНБо22-1","сНБо22-2", "сНБо22-3"], ["сНБо22-К"]]
+          "keyboard": [["сНБо22-1","сНБо22-2", "сНБо22-3"], ["сНБо22-К"]],
+          resize_keyboard: true
         }
       });
       startCommandHandled = false; // Сбрасываем флаг, чтобы команда "Настройки" снова стала доступной для вызова
     }
-    
   });
   
   if (text === "Пары сегодня gr-1") {
     const formattedPairs = pairValue.join('\n');
     bot.sendMessage(chatId, `Сегодня "${searchText}" такие:\n\n${formattedPairs}`)
   }
-  if (text === "Пары завтра gr-1") {
+
+  if (text === "В след день gr-1") {
     const formattedPairs = pairValueT.join('\n');
-    bot.sendMessage(chatId, `Завтра такие\n\n${formattedPairs}`)
+    bot.sendMessage(chatId, `В следующий раз такие\n\n${formattedPairs}`)
   }
-  if (text === "Расписание (файл.excel)") {
+
+  if (text === "Расписание") {
     bot.sendMessage(chatId, "Вот файлик :3");
     bot.sendDocument(chatId, excelTAB);
-  }  
-  if (text === "Настройки") {
+  }
+
+  if (text === "Расписание K") {
+    bot.sendMessage(chatId, "Вот файлик :3");
+    bot.sendDocument(chatId, excelTABK);
+  }    
+
+  if (text === "Меню") {
     startCommandHandled = true; // Устанавливаем флаг, чтобы предотвратить повторное выполнение команды до следующего вызова команды
   }
+
   if (text === "Пары сегодня gr-2") {
     const formattedPairs = pairValue2.join('\n');
     bot.sendMessage(chatId, `Сегодня "${searchText}" такие:\n\n${formattedPairs}`)
   }
+
+  if (text === "В след день gr-2") {
+    const formattedPairs = pairValue2T.join('\n');
+    bot.sendMessage(chatId, `В следующий раз такие:\n\n${formattedPairs}`)
+  }
+
   if (text === "Пары сегодня gr-3") {
     const formattedPairs = pairValue3.join('\n');
     bot.sendMessage(chatId, `Сегодня "${searchText}" такие:\n\n${formattedPairs}`)
   }
+
+  if (text === "В след день gr-3") {
+    const formattedPairs = pairValue3T.join('\n');
+    bot.sendMessage(chatId, `В следующий раз такие:\n\n${formattedPairs}`)
+  }
+
   if (text === "Пары сегодня k") {
     const formattedPairs = pairValueK.join('\n');
     bot.sendMessage(chatId, `Сегодня "${searchText}" такие:\n\n${formattedPairs}`)
   }
-  if (text === "Пары завтра k") {
+
+  if (text === "В след день k") {
     const formattedPairs = pairValueTK.join('\n');
-    bot.sendMessage(chatId, `Завтра такие\n\n${formattedPairs}`)
+    bot.sendMessage(chatId, `В следующий раз такие\n\n${formattedPairs}`)
   }
 });
